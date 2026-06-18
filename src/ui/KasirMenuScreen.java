@@ -2,59 +2,51 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import model.Kasir;
-import service.AdminService;
-import service.ProduksiService;
-import service.RegisterAndLoginService;
-import service.TransaksiService;
 
-public class KasirMenuScreen {
+public class KasirMenuScreen extends JFrame {
 
-    private Kasir user;
-    private TransaksiService transaksiService;
-    private AdminService adminService;
-    private RegisterAndLoginService authService;
-    private ProduksiService produksiService;
+    private JButton btnTransaksi;
+    private JButton btnLogout;
 
-    public KasirMenuScreen(Kasir user, TransaksiService transaksiService, AdminService adminService,
-                           RegisterAndLoginService authService, ProduksiService produksiService) {
-        this.user = user;
-        this.transaksiService = transaksiService;
-        this.adminService = adminService;
-        this.authService = authService;
-        this.produksiService = produksiService;
+    public KasirMenuScreen() {
+
+        setTitle("Dashboard Kasir");
+        setSize(400,300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        initComponents();
+
+        setVisible(true);
     }
 
-    public void show() {
-        JFrame frame = new JFrame("Menu Kasir - Son Ampera");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(420, 320);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+    private void initComponents() {
 
-        JPanel panel = UIHelper.createPanel();
-        GridBagConstraints gbc = UIHelper.defaultGbc();
+        JLabel lblTitle = new JLabel("DASHBOARD KASIR");
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        gbc.gridy = 0;
-        panel.add(UIHelper.createTitleLabel("Menu Kasir"), gbc);
+        btnTransaksi = new JButton("Transaksi");
+        btnLogout = new JButton("Logout");
 
-        gbc.gridy = 1;
-        panel.add(UIHelper.createSubtitleLabel("Halo, " + user.getUsername() + " (" + user.getId() + ")"), gbc);
+        JPanel panel = new JPanel(new GridLayout(2,1,10,10));
 
-        JButton btnTransaksi = UIHelper.createButton("Buat Transaksi", UIHelper.PRIMARY);
-        gbc.gridy = 2;
-        panel.add(btnTransaksi, gbc);
+        panel.add(btnTransaksi);
+        panel.add(btnLogout);
 
-        JButton btnLogout = UIHelper.createFlatButton("Logout");
-        gbc.gridy = 3;
-        panel.add(btnLogout, gbc);
+        setLayout(new BorderLayout());
 
-        btnLogout.addActionListener(e -> {
-            frame.dispose();
-            new WelcomeScreen(authService, adminService, produksiService, transaksiService).show();
+        add(lblTitle, BorderLayout.NORTH);
+        add(panel, BorderLayout.CENTER);
+
+        btnTransaksi.addActionListener(e -> {
+            dispose();
+            new TransaksiScreen();
         });
 
-        frame.setContentPane(panel);
-        frame.setVisible(true);
+        btnLogout.addActionListener(e -> {
+            dispose();
+            new WelcomeScreen();
+        });
     }
 }

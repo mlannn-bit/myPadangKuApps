@@ -2,64 +2,68 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import model.Admin;
-import service.AdminService;
-import service.ProduksiService;
-import service.RegisterAndLoginService;
-import service.TransaksiService;
 
-public class AdminMenuScreen {
+public class AdminMenuScreen extends JFrame {
 
-    private Admin user;
-    private AdminService adminService;
-    private ProduksiService produksiService;
-    private RegisterAndLoginService authService;
-    private TransaksiService transaksiService;
+    private JButton btnKelolaMenu;
+    private JButton btnKelolaBahan;
+    private JButton btnKelolaResep;
+    private JButton btnLogout;
 
-    public AdminMenuScreen(Admin user, AdminService adminService, ProduksiService produksiService,
-                           RegisterAndLoginService authService, TransaksiService transaksiService) {
-        this.user = user;
-        this.adminService = adminService;
-        this.produksiService = produksiService;
-        this.authService = authService;
-        this.transaksiService = transaksiService;
+    public AdminMenuScreen() {
+
+        setTitle("Dashboard Admin");
+        setSize(400, 350);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        initComponents();
+
+        setVisible(true);
     }
 
-    public void show() {
-        JFrame frame = new JFrame("Menu Admin - Son Ampera");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(420, 450);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+    private void initComponents() {
 
-        JPanel panel = UIHelper.createPanel();
-        GridBagConstraints gbc = UIHelper.defaultGbc();
+        JLabel lblTitle = new JLabel("DASHBOARD ADMIN");
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        gbc.gridy = 0;
-        panel.add(UIHelper.createTitleLabel("Menu Admin"), gbc);
+        btnKelolaMenu = new JButton("Kelola Menu");
+        btnKelolaBahan = new JButton("Kelola Bahan Baku");
+        btnKelolaResep = new JButton("Kelola Resep");
+        btnLogout = new JButton("Logout");
 
-        gbc.gridy = 1;
-        panel.add(UIHelper.createSubtitleLabel("Halo, " + user.getUsername() + " (" + user.getId() + ")"), gbc);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 1, 10, 10));
 
-        String[] labels = {"Kelola Menu", "Kelola Bahan Baku", "Kelola Resep", "Produksi"};
-        Color[] colors = {UIHelper.PRIMARY, UIHelper.PURPLE, UIHelper.ORANGE, UIHelper.TEAL};
+        panel.add(btnKelolaMenu);
+        panel.add(btnKelolaBahan);
+        panel.add(btnKelolaResep);
+        panel.add(btnLogout);
 
-        for (int i = 0; i < labels.length; i++) {
-            JButton btn = UIHelper.createButton(labels[i], colors[i]);
-            gbc.gridy = i + 2;
-            panel.add(btn, gbc);
-        }
+        setLayout(new BorderLayout());
 
-        JButton btnLogout = UIHelper.createFlatButton("Logout");
-        gbc.gridy = labels.length + 2;
-        panel.add(btnLogout, gbc);
+        add(lblTitle, BorderLayout.NORTH);
+        add(panel, BorderLayout.CENTER);
 
-        btnLogout.addActionListener(e -> {
-            frame.dispose();
-            new WelcomeScreen(authService, adminService, produksiService, transaksiService).show();
+        btnKelolaMenu.addActionListener(e -> {
+            dispose();
+            new KelolaMenuScreen();
         });
 
-        frame.setContentPane(panel);
-        frame.setVisible(true);
+        btnKelolaBahan.addActionListener(e -> {
+            dispose();
+            new KelolaBahanBakuScreen();
+        });
+
+        btnKelolaResep.addActionListener(e -> {
+            dispose();
+            new KelolaResepScreen();
+        });
+
+        btnLogout.addActionListener(e -> {
+            dispose();
+            new WelcomeScreen();
+        });
     }
 }

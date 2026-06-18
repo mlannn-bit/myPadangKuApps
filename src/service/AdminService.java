@@ -11,12 +11,20 @@ public class AdminService {
     private ArrayList<Menu> menuList = new ArrayList<>();
     private ArrayList<BahanBaku> ingredientList = new ArrayList<>();
 
+    public void setMenuList(ArrayList<Menu> menuList) {
+        this.menuList = menuList;
+    }
+
+    public void setIngredientList(ArrayList<BahanBaku> ingredientList) {
+        this.ingredientList = ingredientList;
+    }
+
     public boolean addMenu(String name, int price, int stock) {
         if (!Validator.isNotEmpty(name) || !Validator.isValidPrice(price) || !Validator.isValidStock(stock)) {
             return false;
         }
 
-        menuList.add(new Menu(name, price, stock));
+        menuList.add(new Menu(name, price, 0));
         return true;
     }
 

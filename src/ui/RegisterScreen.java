@@ -1,113 +1,121 @@
 package ui;
 
+import data.AppData;
+
 import javax.swing.*;
 import java.awt.*;
-import service.AdminService;
-import service.ProduksiService;
-import service.RegisterAndLoginService;
-import service.TransaksiService;
 
-public class RegisterScreen {
+public class RegisterScreen extends JFrame {
 
-    private RegisterAndLoginService authService;
-    private AdminService adminService;
-    private ProduksiService produksiService;
-    private TransaksiService transaksiService;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JComboBox<String> cbRole;
 
-    public RegisterScreen(RegisterAndLoginService authService, AdminService adminService,
-                          ProduksiService produksiService, TransaksiService transaksiService) {
-        this.authService = authService;
-        this.adminService = adminService;
-        this.produksiService = produksiService;
-        this.transaksiService = transaksiService;
+    private JButton btnRegister;
+    private JButton btnKembali;
+
+    public RegisterScreen() {
+
+        setTitle("Register");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        initComponents();
+
+        setVisible(true);
     }
 
-    public void show() {
-        JFrame frame = new JFrame("Registrasi - Son Ampera");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+    private void initComponents() {
 
-        JPanel panel = UIHelper.createPanel();
-        GridBagConstraints gbc = UIHelper.defaultGbc();
+        JLabel lblTitle = new JLabel("REGISTER");
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        gbc.gridy = 0;
-        panel.add(UIHelper.createTitleLabel("Registrasi"), gbc);
+        JLabel lblUsername = new JLabel("Username");
+        JLabel lblPassword = new JLabel("Password");
+        JLabel lblRole = new JLabel("Role");
 
-        gbc.gridy = 1; gbc.gridwidth = 1; gbc.gridx = 0;
-        panel.add(new JLabel("Username:"), gbc);
-        JTextField txtUsername = new JTextField(15);
-        gbc.gridx = 1;
-        panel.add(txtUsername, gbc);
+        txtUsername = new JTextField();
+        txtPassword = new JPasswordField();
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Password:"), gbc);
-        JPasswordField txtPassword = new JPasswordField(15);
-        gbc.gridx = 1;
-        panel.add(txtPassword, gbc);
+        cbRole = new JComboBox<>();
+        cbRole.addItem("Admin");
+        cbRole.addItem("Juru Masak");
+        cbRole.addItem("Kasir");
 
-        gbc.gridx = 0; gbc.gridy = 3;
-        panel.add(new JLabel("Role:"), gbc);
-        String[] roles = {"Admin", "Juru Masak", "Kasir"};
-        JComboBox<String> cmbRole = new JComboBox<>(roles);
-        gbc.gridx = 1;
-        panel.add(cmbRole, gbc);
+        btnRegister = new JButton("Register");
+        btnKembali = new JButton("Kembali");
 
-        JLabel lblError = UIHelper.createErrorLabel();
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
-        panel.add(lblError, gbc);
+        JPanel formPanel = new JPanel(new GridLayout(6, 1, 5, 5));
 
-        JButton btnRegister = UIHelper.createButton("Daftar", UIHelper.SUCCESS);
-        gbc.gridy = 5;
-        panel.add(btnRegister, gbc);
+        formPanel.add(lblUsername);
+        formPanel.add(txtUsername);
 
-        JButton btnBack = UIHelper.createFlatButton("Kembali");
-        gbc.gridy = 6;
-        panel.add(btnBack, gbc);
+        formPanel.add(lblPassword);
+        formPanel.add(txtPassword);
 
-        btnRegister.addActionListener(e -> {
-            String username = txtUsername.getText().trim();
-            String password = new String(txtPassword.getPassword()).trim();
-            int role = cmbRole.getSelectedIndex() + 1;
+        formPanel.add(lblRole);
+        formPanel.add(cbRole);
 
-            if (username.isEmpty()) {
-                lblError.setText("Username tidak boleh kosong.");
-                return;
-            }
+        JPanel buttonPanel = new JPanel();
 
-            if (password.isEmpty()) {
-                lblError.setText("Password tidak boleh kosong.");
-                return;
-            }
+        buttonPanel.add(btnRegister);
+        buttonPanel.add(btnKembali);
 
-            if (password.length() < 5) {
-                lblError.setText("Password minimal 5 karakter.");
-                return;
-            }
+        setLayout(new BorderLayout(10, 10));
 
-            if (authService.isUsernameTaken(username)) {
-                lblError.setText("Username sudah digunakan.");
-                return;
-            }
+        add(lblTitle, BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
 
-            boolean success = authService.register(role, username, password);
+        btnRegister.addActionListener(e -> register());
 
-            if (success) {
-                JOptionPane.showMessageDialog(frame, "Registrasi berhasil! Silakan login.", "Berhasil", JOptionPane.INFORMATION_MESSAGE);
-                frame.dispose();
-                new LoginScreen(authService, adminService, produksiService, transaksiService).show();
-            } else {
-                lblError.setText("Registrasi gagal. Coba lagi.");
-            }
+        btnKembali.addActionListener(e -> {
+            dispose();
+            new WelcomeScreen();
         });
+    }
 
-        btnBack.addActionListener(e -> {
-            frame.dispose();
-            new WelcomeScreen(authService, adminService, produksiService, transaksiService).show();
-        });
+    private void register() {
 
-        frame.setContentPane(panel);
-        frame.setVisible(true);
+        String username = txtUsername.getText();
+        String password = String.valueOf(txtPassword.getPassword());
+
+        int role = 1;
+
+        if (cbRole.getSelectedIndex() == 0) {
+            role = 1; // Admin
+        } else if (cbRole.getSelectedIndex() == 1) {
+            role = 2; // Juru Masak
+        } else if (cbRole.getSelectedIndex() == 2) {
+            role = 3; // Kasir
+        }
+
+        boolean success = AppData.authService.register(
+                role,
+                username,
+                password
+        );
+
+        if (success) {
+
+            AppData.saveAll();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Register Berhasil!"
+            );
+
+            dispose();
+            new WelcomeScreen();
+
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Register Gagal!\nUsername minimal 3 karakter\nPassword minimal 5 karakter\natau username sudah digunakan."
+            );
+        }
     }
 }

@@ -2,71 +2,42 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
-import service.AdminService;
-import service.ProduksiService;
-import service.RegisterAndLoginService;
-import service.TransaksiService;
 
-public class WelcomeScreen {
+public class WelcomeScreen extends JFrame {
 
-    private RegisterAndLoginService authService;
-    private AdminService adminService;
-    private ProduksiService produksiService;
-    private TransaksiService transaksiService;
+    public WelcomeScreen() {
 
-    public WelcomeScreen(RegisterAndLoginService authService, AdminService adminService,
-                         ProduksiService produksiService, TransaksiService transaksiService) {
-        this.authService = authService;
-        this.adminService = adminService;
-        this.produksiService = produksiService;
-        this.transaksiService = transaksiService;
-    }
+        setTitle("MY PADANGKU");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-    public void show() {
-        JFrame frame = new JFrame("Son Ampera");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+        JLabel title = new JLabel("MY PADANGKU APPS");
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 20));
 
-        JPanel panel = UIHelper.createPanel();
-        GridBagConstraints gbc = UIHelper.defaultGbc();
-        gbc.gridwidth = 2;
-
-        JLabel title = new JLabel("Son Ampera", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 28));
-        title.setForeground(new Color(60, 60, 60));
-        gbc.gridy = 0;
-        panel.add(title, gbc);
-
-        panel.add(UIHelper.createSubtitleLabel("Sistem Manajemen Warung"), setGbc(gbc, 1));
-
-        gbc.gridwidth = 1;
-        gbc.gridy = 2;
-        gbc.gridx = 0;
-        JButton btnLogin = UIHelper.createButton("Login", UIHelper.PRIMARY);
-        panel.add(btnLogin, gbc);
-
-        gbc.gridx = 1;
-        JButton btnRegister = UIHelper.createButton("Registrasi", UIHelper.SUCCESS);
-        panel.add(btnRegister, gbc);
+        JButton btnLogin = new JButton("Login");
+        JButton btnRegister = new JButton("Register");
 
         btnLogin.addActionListener(e -> {
-            frame.dispose();
-            new LoginScreen(authService, adminService, produksiService, transaksiService).show();
+            dispose();
+            new LoginScreen();
         });
 
         btnRegister.addActionListener(e -> {
-            frame.dispose();
-            new RegisterScreen(authService, adminService, produksiService, transaksiService).show();
+            dispose();
+            new RegisterScreen();
         });
 
-        frame.setContentPane(panel);
-        frame.setVisible(true);
-    }
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(btnLogin);
+        buttonPanel.add(btnRegister);
 
-    private GridBagConstraints setGbc(GridBagConstraints gbc, int gridy) {
-        gbc.gridy = gridy;
-        return gbc;
+        setLayout(new BorderLayout());
+
+        add(title, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 }

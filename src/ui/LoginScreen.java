@@ -1,101 +1,102 @@
 package ui;
 
-import javax.swing.*;
-import java.awt.*;
+import data.AppData;
 import model.Admin;
 import model.JuruMasak;
 import model.Kasir;
 import model.User;
-import service.AdminService;
-import service.ProduksiService;
-import service.RegisterAndLoginService;
-import service.TransaksiService;
 
-public class LoginScreen {
+import javax.swing.*;
+import java.awt.*;
 
-    private RegisterAndLoginService authService;
-    private AdminService adminService;
-    private ProduksiService produksiService;
-    private TransaksiService transaksiService;
+public class LoginScreen extends JFrame {
 
-    public LoginScreen(RegisterAndLoginService authService, AdminService adminService,
-                       ProduksiService produksiService, TransaksiService transaksiService) {
-        this.authService = authService;
-        this.adminService = adminService;
-        this.produksiService = produksiService;
-        this.transaksiService = transaksiService;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JButton btnLogin;
+    private JButton btnKembali;
+
+    public LoginScreen() {
+
+        setTitle("Login");
+        setSize(400, 250);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        initComponents();
+
+        setVisible(true);
     }
 
-    public void show() {
-        JFrame frame = new JFrame("Login - Son Ampera");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 330);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+    private void initComponents() {
 
-        JPanel panel = UIHelper.createPanel();
-        GridBagConstraints gbc = UIHelper.defaultGbc();
+        JLabel lblTitle = new JLabel("LOGIN");
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-        gbc.gridy = 0;
-        panel.add(UIHelper.createTitleLabel("Login"), gbc);
+        JLabel lblUsername = new JLabel("Username");
+        JLabel lblPassword = new JLabel("Password");
 
-        gbc.gridy = 1; gbc.gridwidth = 1; gbc.gridx = 0;
-        panel.add(new JLabel("Username:"), gbc);
-        JTextField txtUsername = new JTextField(15);
-        gbc.gridx = 1;
-        panel.add(txtUsername, gbc);
+        txtUsername = new JTextField();
+        txtPassword = new JPasswordField();
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Password:"), gbc);
-        JPasswordField txtPassword = new JPasswordField(15);
-        gbc.gridx = 1;
-        panel.add(txtPassword, gbc);
+        btnLogin = new JButton("Login");
+        btnKembali = new JButton("Kembali");
 
-        JLabel lblError = UIHelper.createErrorLabel();
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        panel.add(lblError, gbc);
+        JPanel formPanel = new JPanel(new GridLayout(4, 1, 5, 5));
 
-        JButton btnLogin = UIHelper.createButton("Login", UIHelper.PRIMARY);
-        gbc.gridy = 4;
-        panel.add(btnLogin, gbc);
+        formPanel.add(lblUsername);
+        formPanel.add(txtUsername);
+        formPanel.add(lblPassword);
+        formPanel.add(txtPassword);
 
-        JButton btnBack = UIHelper.createFlatButton("Kembali");
-        gbc.gridy = 5;
-        panel.add(btnBack, gbc);
+        JPanel buttonPanel = new JPanel();
 
-        btnLogin.addActionListener(e -> {
-            String username = txtUsername.getText().trim();
-            String password = new String(txtPassword.getPassword()).trim();
+        buttonPanel.add(btnLogin);
+        buttonPanel.add(btnKembali);
 
-            if (username.isEmpty() || password.isEmpty()) {
-                lblError.setText("Username dan password tidak boleh kosong.");
-                return;
-            }
+        setLayout(new BorderLayout(10, 10));
 
-            User user = authService.login(username, password);
+        add(lblTitle, BorderLayout.NORTH);
+        add(formPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
 
-            if (user == null) {
-                lblError.setText("Username atau password salah.");
-                return;
-            }
+        btnLogin.addActionListener(e -> login());
 
-            frame.dispose();
-
-            if (user instanceof Admin) {
-                new AdminMenuScreen((Admin) user, adminService, produksiService, authService, transaksiService).show();
-            } else if (user instanceof JuruMasak) {
-                new JuruMasakMenuScreen((JuruMasak) user, produksiService, adminService, authService, transaksiService).show();
-            } else if (user instanceof Kasir) {
-                new KasirMenuScreen((Kasir) user, transaksiService, adminService, authService, produksiService).show();
-            }
+        btnKembali.addActionListener(e -> {
+            dispose();
+            new WelcomeScreen();
         });
+    }
 
-        btnBack.addActionListener(e -> {
-            frame.dispose();
-            new WelcomeScreen(authService, adminService, produksiService, transaksiService).show();
-        });
+    private void login() {
 
-        frame.setContentPane(panel);
-        frame.setVisible(true);
+        String username = txtUsername.getText();
+        String password = String.valueOf(txtPassword.getPassword());
+
+        User user = AppData.authService.login(username, password);
+
+        if (user == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Username atau Password salah!"
+            );
+            return;
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Login Berhasil!"
+        );
+
+        dispose();
+
+        if (user instanceof Admin) {
+            new AdminMenuScreen();
+        } else if (user instanceof JuruMasak) {
+            new JuruMasakMenuScreen();
+        } else if (user instanceof Kasir) {
+            new KasirMenuScreen();
+        }
     }
 }
