@@ -1,7 +1,7 @@
 import data.AppData;
 import ui.WelcomeScreen;
 
-public class Main {
+public class MainProgram {
     public static void main(String[] args) {
         AppData.loadAll();
         new WelcomeScreen();
