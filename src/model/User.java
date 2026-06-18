@@ -5,10 +5,10 @@ public abstract class User {
     private String password;
     private String id;
 
-    public User(String id, String name, String password){
+    public User(String id, String name, String password) {
+        this.id = id;
         this.username = name;
         this.password = password;
-        this.id = id;
     }
 
     public String getUsername() {
@@ -27,13 +27,11 @@ public abstract class User {
         return id;
     }
 
-    public boolean changePassword(String odlPass, String newPass) {
-        if (password.equals(odlPass)) {
+    public boolean changePassword(String oldPass, String newPass) {
+        if (password.equals(oldPass)) {
             this.password = newPass;
             return true;
-        }
-
-        else{
+        } else {
             return false;
         }
     }

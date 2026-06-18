@@ -1,33 +1,21 @@
-import model.Transaksi;
+import service.AdminService;
+import service.ProduksiService;
+import service.RegisterAndLoginService;
 import service.TransaksiService;
-import model.Kasir;
-import model.Menu;
-import model.Admin;
-import model.JuruMasak;
-import model.User;
+import ui.WelcomeScreen;
+
+import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        RegisterAndLoginService authService = new RegisterAndLoginService();
+        AdminService adminService = new AdminService();
+        ProduksiService produksiService = new ProduksiService();
+        TransaksiService transaksiService = new TransaksiService();
 
-        User admin1 = new Kasir("KontolGaming", "12345");
-        User admin2 = new Kasir("KontolKuda", "12345");
-        User admin3 = new JuruMasak("KontolNgaceng", "12345");
-
-      if (admin1 instanceof Admin) {
-        System.out.println("Ini akun admin");
-      } else {
-        System.out.println("Ini bukan akun admin");
-      }
-
-
-      
-      if (admin2 instanceof Kasir) {
-        System.out.println("ini akun Kasir");
-      }
-      
-      if (admin3 instanceof JuruMasak) {
-        System.out.println("Ini akun JuruMasak");
-      }
+        SwingUtilities.invokeLater(() ->
+            new WelcomeScreen(authService, adminService, produksiService, transaksiService).show()
+        );
     }
 }

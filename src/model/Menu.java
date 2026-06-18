@@ -44,7 +44,7 @@ public class Menu {
         return recipeList;
     }
 
-    public void addRepice(Resep resep) {
+    public void addRecipe(Resep resep) {
         recipeList.add(resep);
     }
 }

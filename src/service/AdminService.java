@@ -3,15 +3,16 @@ package service;
 import model.BahanBaku;
 import model.Menu;
 import model.Resep;
+import utils.Validator;
 
 import java.util.ArrayList;
 
 public class AdminService {
     private ArrayList<Menu> menuList = new ArrayList<>();
-    private ArrayList<BahanBaku> ingredientList;
-    
+    private ArrayList<BahanBaku> ingredientList = new ArrayList<>();
+
     public boolean addMenu(String name, int price, int stock) {
-        if (name.trim().isEmpty() || price <= 0 || stock < 0) {
+        if (!Validator.isNotEmpty(name) || !Validator.isValidPrice(price) || !Validator.isValidStock(stock)) {
             return false;
         }
 
@@ -20,7 +21,7 @@ public class AdminService {
     }
 
     public boolean deleteMenu(String menuName) {
-        for(Menu menu: menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
                 menuList.remove(menu);
                 return true;
@@ -29,15 +30,13 @@ public class AdminService {
         return false;
     }
 
-    public boolean editMemuName(String menuName, String newName) {
-
-        if (newName.trim().isEmpty()) {
+    public boolean editMenuName(String menuName, String newName) {
+        if (!Validator.isNotEmpty(newName)) {
             return false;
         }
 
-        for(Menu menu : menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
-
                 menu.setProductName(newName);
                 return true;
             }
@@ -46,14 +45,12 @@ public class AdminService {
     }
 
     public boolean editMenuPrice(String menuName, int newPrice) {
-
-        if (newPrice <= 0) {
+        if (!Validator.isValidPrice(newPrice)) {
             return false;
         }
 
-        for(Menu menu : menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
-                
                 menu.setProductPrice(newPrice);
                 return true;
             }
@@ -62,14 +59,12 @@ public class AdminService {
     }
 
     public boolean editMenuStock(String menuName, int newStock) {
-        
-        if (newStock < 0) {
+        if (!Validator.isValidStock(newStock)) {
             return false;
         }
 
-        for(Menu menu: menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
-
                 menu.setProductStock(newStock);
                 return true;
             }
@@ -78,7 +73,7 @@ public class AdminService {
     }
 
     public boolean addIngredient(String name, int stock, String unit) {
-        if (name.trim().isEmpty() || stock < 0 || unit.trim().isEmpty()) {
+        if (!Validator.isNotEmpty(name) || !Validator.isValidStock(stock) || !Validator.isNotEmpty(unit)) {
             return false;
         }
 
@@ -87,11 +82,11 @@ public class AdminService {
     }
 
     public boolean deleteIngredient(String nameIngredient) {
-        if (nameIngredient.trim().isEmpty()) {
+        if (!Validator.isNotEmpty(nameIngredient)) {
             return false;
         }
 
-        for(BahanBaku ingredient : ingredientList) {
+        for (BahanBaku ingredient : ingredientList) {
             if (ingredient.getName().equalsIgnoreCase(nameIngredient)) {
                 ingredientList.remove(ingredient);
                 return true;
@@ -101,11 +96,11 @@ public class AdminService {
     }
 
     public boolean editNameIngredient(String nameIngredient, String newNameIngredient) {
-        if (newNameIngredient.trim().isEmpty()) {
+        if (!Validator.isNotEmpty(newNameIngredient)) {
             return false;
         }
 
-        for(BahanBaku ingredient : ingredientList) {
+        for (BahanBaku ingredient : ingredientList) {
             if (ingredient.getName().equalsIgnoreCase(nameIngredient)) {
                 ingredient.setName(newNameIngredient);
                 return true;
@@ -116,11 +111,11 @@ public class AdminService {
     }
 
     public boolean editStockIngredient(String nameIngredient, int newStockIngredient) {
-        if (newStockIngredient < 0) {
+        if (!Validator.isValidStock(newStockIngredient)) {
             return false;
         }
 
-        for(BahanBaku ingredient : ingredientList) {
+        for (BahanBaku ingredient : ingredientList) {
             if (ingredient.getName().equalsIgnoreCase(nameIngredient)) {
                 ingredient.setStock(newStockIngredient);
                 return true;
@@ -130,11 +125,11 @@ public class AdminService {
     }
 
     public boolean editUnitIngredient(String nameIngredient, String newUnitIngredient) {
-        if (newUnitIngredient.trim().isEmpty()) {
+        if (!Validator.isNotEmpty(newUnitIngredient)) {
             return false;
         }
 
-        for(BahanBaku ingredient : ingredientList) {
+        for (BahanBaku ingredient : ingredientList) {
             if (ingredient.getName().equalsIgnoreCase(nameIngredient)) {
                 ingredient.setUnit(newUnitIngredient);
                 return true;
@@ -145,13 +140,13 @@ public class AdminService {
     }
 
     public boolean addRecipeToMenu(String menuName, BahanBaku ingredient, int amount) {
-        if (ingredient == null || amount <= 0) {
+        if (ingredient == null || !Validator.isValidAmount(amount)) {
             return false;
         }
 
-        for(Menu menu : menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
-                menu.addRepice(new Resep(ingredient, amount));
+                menu.addRecipe(new Resep(ingredient, amount));
                 return true;
             }
         }
@@ -160,9 +155,9 @@ public class AdminService {
     }
 
     public boolean deleteRecipe(String menuName, BahanBaku ingredient) {
-        for(Menu menu : menuList) {
+        for (Menu menu : menuList) {
             if (menu.getProductName().equalsIgnoreCase(menuName)) {
-                for(Resep recipe : menu.getRecipeList()) {
+                for (Resep recipe : menu.getRecipeList()) {
                     if (recipe.getIngredient().equals(ingredient)) {
                         menu.getRecipeList().remove(recipe);
                         return true;
@@ -172,5 +167,31 @@ public class AdminService {
             }
         }
         return false;
+    }
+
+    public ArrayList<Menu> getMenuList() {
+        return menuList;
+    }
+
+    public ArrayList<BahanBaku> getIngredientList() {
+        return ingredientList;
+    }
+
+    public BahanBaku findIngredientByName(String name) {
+        for (BahanBaku ingredient : ingredientList) {
+            if (ingredient.getName().equalsIgnoreCase(name)) {
+                return ingredient;
+            }
+        }
+        return null;
+    }
+
+    public Menu findMenuByName(String name) {
+        for (Menu menu : menuList) {
+            if (menu.getProductName().equalsIgnoreCase(name)) {
+                return menu;
+            }
+        }
+        return null;
     }
 }
